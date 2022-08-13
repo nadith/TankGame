@@ -1,11 +1,16 @@
 # TankGame
 Tank game written in C language.
 
+> This code is developed in VSCode (Windows - WSL[Ubuntu]). Please open it with 
+> VSCode if the indentation is not working on other editors. Windows style line
+> endings may affect the indentation of the code.
+
 Highlights:
 - Code comments (short & concise)
 - Function header comments (short & concise)
 - Modularization of the code (Short functions), 40-60 max lines of code.
 - Line width (100 char max)
+- Proper indentation of the code
 - Low cyclomatic complexity of the code
 - No multiple returns, global variables.
 - No break, continue statements inside loops (switch statements are allowed).
