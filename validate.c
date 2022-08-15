@@ -10,7 +10,6 @@
 /* Local Includes */
 #include "util.h"
 #include "macros.h"
-#include "validate.h"
 
 /**************************************************************************************************/
 /* Helper Methods												    		      				  */
@@ -23,7 +22,7 @@
  * @param pBulletStCell if facing = TRUE, start cell of the bullet.
  * @return int whether enemy is facing or not.
  */
-int isFacingPlayerCore(int pEnemy[], int pPlayer[], int* pBulletStCell)
+static int isFacingPlayerCore(int pEnemy[], int pPlayer[], int* pBulletStCell)
 {
 	int st = -1, en = -1;
 	int isFacing = FALSE;
@@ -31,7 +30,7 @@ int isFacingPlayerCore(int pEnemy[], int pPlayer[], int* pBulletStCell)
 	/* Check based on enemy's direction */
 	switch (pEnemy[IDX_DIR])
 	{
-		case 'u': /* if same col && enemy below the player */
+		case DIR_UP: /* if same col && enemy below the player */
 			if ((pEnemy[IDX_COL] == pPlayer[IDX_COL]) && 
                 (pEnemy[IDX_ROW] > pPlayer[IDX_ROW]))
 			{
@@ -41,7 +40,7 @@ int isFacingPlayerCore(int pEnemy[], int pPlayer[], int* pBulletStCell)
 			}
 			break;
 			
-		case 'd': /* if same row && enemy above player */
+		case DIR_DOWN: /* if same row && enemy above player */
 			if ((pEnemy[IDX_COL] == pPlayer[IDX_COL]) && 
                 (pEnemy[IDX_ROW] < pPlayer[IDX_ROW]))
 			{
@@ -51,7 +50,7 @@ int isFacingPlayerCore(int pEnemy[], int pPlayer[], int* pBulletStCell)
 			}
 			break;
 			
-		case 'l': /* if same row && enemy after player */
+		case DIR_LEFT: /* if same row && enemy after player */
             if ((pEnemy[IDX_ROW] == pPlayer[IDX_ROW]) && 
                 (pEnemy[IDX_COL] > pPlayer[IDX_COL]))
 			{
@@ -61,7 +60,7 @@ int isFacingPlayerCore(int pEnemy[], int pPlayer[], int* pBulletStCell)
 			}
 			break;
 			
-		case 'r': /* if same row && enemy is before player */
+		case DIR_RIGHT: /* if same row && enemy is before player */
             if ((pEnemy[IDX_ROW] == pPlayer[IDX_ROW]) && 
                 (pEnemy[IDX_COL] < pPlayer[IDX_COL]))
 			{
@@ -112,8 +111,7 @@ int isFacingPlayer(int pEnemy[], int pPlayer[], int* pBulletStCell)
  */
 int isObjOverlap(int pObj1[], int pObj2[])
 {
-    return (pObj1[IDX_ROW] == pObj2[IDX_ROW] && 
-                pObj1[IDX_COL] == pObj2[IDX_COL]);
+    return (pObj1[IDX_ROW] == pObj2[IDX_ROW] && pObj1[IDX_COL] == pObj2[IDX_COL]);
 }
 
 /**************************************************************************************************/
@@ -127,7 +125,7 @@ int isObjOverlap(int pObj1[], int pObj2[])
  */
 int validateDirection(char direction)
 {    
-    return (direction == 'r' || direction == 'l' || direction == 'u' || direction == 'd');
+    return (direction == DIR_RIGHT || direction == DIR_LEFT || direction == DIR_UP || direction == DIR_DOWN);
 }
 
 /**************************************************************************************************/
@@ -148,7 +146,7 @@ int validateObjBounds(int pMapSize[], int pObj[], char* zMsg)
 	/* validity in the cols direction (x-direction) */
     valid = valid && BETWEEN(1, (pMapSize[IDX_MAP_NCOL] - 2), pObj[IDX_COL]);
 
-    if (!valid && zMsg != NULL)
+	if (!valid && zMsg != NULL)
         printError(zMsg);
     
     return valid;
@@ -167,17 +165,16 @@ int validateTanks(int* pEnemy, int* pPlayer)
 {
 	int isValid = TRUE;
 	
-	/* checks if player is placed in front of enemy -> insant lose */
-	if (isFacingPlayer(pEnemy, pPlayer, NULL))
-	{
-		printError("Cannot place tanks in instant lose position.\n");
-		isValid = FALSE;
-	}
-	
 	/* checks if player and enemy are on the same starting cell */
-	else if (isObjOverlap(pEnemy, pPlayer))
+	if (isObjOverlap(pEnemy, pPlayer))
 	{
 		printError("Player and enemy cannot start on the same cell.\n");
+		isValid = FALSE;
+	}
+	/* checks if player is placed in front of enemy -> insant lose */
+	else if (isFacingPlayer(pEnemy, pPlayer, NULL))
+	{
+		printError("Cannot place tanks in instant lose position.\n");
 		isValid = FALSE;
 	}
 	

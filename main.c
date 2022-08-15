@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     /* 0 -> no. of rows, 1 -> no. of cols */
     int aiMapSize[2] = {0, 0};
     
-    /* RefreshPrams object (void* [5]) is used when printing the map / canvas */
+    /* RefreshPrams object (void* [5]) is used when printing the map/canvas */
     void* apvRefreshParams[5] = {NULL, NULL, NULL, NULL, NULL};
 
     /* Objects to represent enemy, player (int [3]) */
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
         /* pack the individual params to RefreshPrams object */
 		packRefreshParams(apvRefreshParams, map, aiMapSize, aiEnemy, aiPlayer, NULL);
 
-        /* RP debug print Print */
+        /* Print the refresh map params */
         debugRefreshMapParams(apvRefreshParams, "RP");
 
 		/* Print the canvas along with other objects (enemy, player) */

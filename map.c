@@ -59,8 +59,6 @@ void destroyMap(char** map, int pMapSize[])
 
     free(map);
     map = NULL;
-
-    return;
 }
 
 /**************************************************************************************************/
@@ -78,15 +76,15 @@ void resetMap(char** map, int pMapSize[])
 	int i;
 	for(i = 0; i < rowSize; i++)
 	{
-		if(i == 0 || i == rowSize - 1)
+		if (i == 0 || i == rowSize - 1)
 		{
-			memset(map[i], '*', colSize);
+			memset(map[i], MARKER_BORDER, colSize);
 		}
 		else
 		{
-			memset(map[i], '*', 1);
+			memset(map[i], MARKER_BORDER, 1);
 			memset(map[i] + 1, ' ', colSize - 2);
-			memset(map[i] + colSize - 1, '*', 1);
+			memset(map[i] + colSize - 1, MARKER_BORDER, 1);
 		}
 	}
 }
@@ -98,7 +96,7 @@ void resetMap(char** map, int pMapSize[])
  * @param map the canvas.
  * @param pObj the object (enemy, player, bullet).
  */
-void placeObject(char** map, int pObj[])
+void placeObj(char** map, int pObj[])
 {
 	if (pObj && isObjInitialized(pObj))
 	{
@@ -109,21 +107,21 @@ void placeObject(char** map, int pObj[])
 			
 		switch(direction)
 		{
-			case 'l':
-				face = '<';
-			break;
+			case DIR_LEFT:
+				face = MARKER_FACE_LEFT;
+				break;
 				
-			case 'r':
-				face = '>';
-			break;
+			case DIR_RIGHT:
+				face = MARKER_FACE_RIGHT;
+				break;
 				
-			case 'u':
-				face = '^';
-			break;
+			case DIR_UP:
+				face = MARKER_FACE_UP;
+				break;
 				
-			case 'd':
-				face = 'v';
-			break;
+			case DIR_DOWN:
+				face = MARKER_FACE_DOWN;
+				break;
 				
 			default:
 				face = direction; /* For the bullet */
@@ -161,7 +159,7 @@ static void printMap(char** map, int pMapSize[])
 		for(j = 0; j < colSize; j++)
 		{
 			/* bullet */
-			if(map[i][j] == '|' || map[i][j] == '-')
+			if (map[i][j] == '|' || map[i][j] == '-')
             { 
 				(*colours[colourIdx++ % 2])(map[i][j]);
 				colourIdx %= 2;
@@ -173,8 +171,6 @@ static void printMap(char** map, int pMapSize[])
 		}
 		printf("\n");
 	}
-
-	return;
 }
 
 /**************************************************************************************************/
@@ -187,19 +183,21 @@ static void printMap(char** map, int pMapSize[])
 void refreshMap(void* pRefreshParams[])
 {
 	char** map;
-	int *pMapSize, *pEnemy, *pPlayer, *pLazer;	
-	unPackRefreshParams(pRefreshParams, &map, &pMapSize, &pEnemy, &pPlayer, &pLazer);
+	int *pMapSize, *pEnemy, *pPlayer, *pBullet;	
+	unpackRefreshParams(pRefreshParams, &map, &pMapSize, &pEnemy, &pPlayer, &pBullet);
 
 	/* Reset map and sets the border */
 	resetMap(map, pMapSize);
 
 	/* Place the objects on the map */	
-	placeObject(map, pEnemy);
-	placeObject(map, pPlayer);
-	placeObject(map, pLazer);
+	placeObj(map, pEnemy);
+	placeObj(map, pPlayer);
+	placeObj(map, pBullet);
 	
 	/* Print the Map */
-	system("clear"); /* <= comment this line if you want to see all past frames on terminal */
+#ifndef DEBUG
+	system("clear");  /* <= comment this line if you want to see all past frames on terminal */
+#endif
 	printMap(map, pMapSize);
 }
 

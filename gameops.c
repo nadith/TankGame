@@ -34,7 +34,7 @@ static int getHitStatus(int* pBlow, int* pPlayer)
 {
 	int gameStatus = GS_ENEMY_HIT;
 	
-	if(pBlow[IDX_ROW] == pPlayer[IDX_ROW] &&
+	if (pBlow[IDX_ROW] == pPlayer[IDX_ROW] &&
 		  pBlow[IDX_COL] == pPlayer[IDX_COL])
 	{
 		gameStatus = GS_PLAYER_HIT;
@@ -51,14 +51,12 @@ static int getHitStatus(int* pBlow, int* pPlayer)
  */
 void readUserInput(char* pcUserInput)
 {
-	/* MENU:
-	to add -> l to print log file */
-	printf("w to go/face up\n");
-	printf("s to go/face down\n");
-	printf("a to go/face left\n");
-	printf("d to go/face right\n");
-	printf("f to shoot laser\n");
-	/*printf("l to print log file\n");*/
+	/* MENU: */
+	printf("%c to go/face up\n", KEY_UP);
+	printf("%c to go/face down\n", KEY_DOWN);
+	printf("%c to go/face left\n", KEY_LEFT);
+	printf("%c to go/face right\n", KEY_RIGHT);
+	printf("%c to shoot laser\n", KEY_SHOOT);
 	printf("action: ");
 	scanf(" %c", pcUserInput);
 	printf("\n");
@@ -85,23 +83,21 @@ int mainLoop(void* pRefreshParams[])
 		switch(cUserInput)
 		{
 			/* all movement actions: */
-			case 'w':
-			case 's':
-			case 'a':
-			case 'd':			
+			case KEY_UP:
+			case KEY_DOWN:
+			case KEY_LEFT:
+			case KEY_RIGHT:		
 				gameStatus = turnOrMove(pRefreshParams, cUserInput);
 				debugObj(pRefreshParams[IDX_RP_PLAYER], "Player");
-
-				if(gameStatus == GS_NONE_HIT)
-					refreshMap(pRefreshParams);
 			break;
 				
-			case 'f':
+			case KEY_SHOOT:
 				gameStatus = shoot(pRefreshParams);
 			break;
 
 			default:
 				/* invalid user input */
+				printError("Invalid User Input\n\n");
 				refreshMap(pRefreshParams);
 			break;
 		}		
@@ -120,7 +116,7 @@ int mainLoop(void* pRefreshParams[])
  */
 void processGameStatus(int gameStatus)
 {
-	if(gameStatus == GS_ENEMY_HIT)
+	if (gameStatus == GS_ENEMY_HIT)
 	{
 		printf("%sYou Won! :D%s\n", LIGHT_GREEN, CLEAN);
 	}
@@ -149,13 +145,13 @@ void processGameStatus(int gameStatus)
 static int animateUpDownCore(int animateLoop, int stCol, int i, void* pRefreshParams[], 
 								char** map, int pBullet[], int pPlayer[], int* gameStatus)
 {
-	if(map[i][stCol] == '*')
+	if (map[i][stCol] == MARKER_BORDER)
 	{	
 		/* hitting border */
 		pRefreshParams[IDX_RP_BULLET] = NULL;
 		pauseAndRefreshMap(pRefreshParams);		
 	}
-	else if(map[i][stCol] != ' ')
+	else if (map[i][stCol] != ' ')
 	{	
 		/* shot enemy or player */			
 		updateObj(pBullet, i, stCol, 'X');
@@ -168,7 +164,7 @@ static int animateUpDownCore(int animateLoop, int stCol, int i, void* pRefreshPa
 	}
 	else
 	{		
-		/* lazer placement */
+		/* Bullet placement */
 		updateObj(pBullet, i, stCol, '|');
 		pRefreshParams[IDX_RP_BULLET] = pBullet;
 		pauseAndRefreshMap(pRefreshParams);	
@@ -193,7 +189,7 @@ static int animateUp(void* pRefreshParams[], int* pBulletStCell)
 
 	char** map;
 	int *pMapSize, *pEnemy, *pPlayer, *pBullet;	
-	unPackRefreshParams(pRefreshParams, &map, &pMapSize, &pEnemy, &pPlayer, &pBullet);
+	unpackRefreshParams(pRefreshParams, &map, &pMapSize, &pEnemy, &pPlayer, &pBullet);
 	
 	for(i = stRow; i >= 0 && animateLoop; i--)
 	{		
@@ -220,7 +216,7 @@ static int animateDown(void* pRefreshParams[], int* pBulletStCell)
 
 	char** map;
 	int *pMapSize, *pEnemy, *pPlayer, *pBullet;	
-	unPackRefreshParams(pRefreshParams, &map, &pMapSize, &pEnemy, &pPlayer, &pBullet);
+	unpackRefreshParams(pRefreshParams, &map, &pMapSize, &pEnemy, &pPlayer, &pBullet);
 	
 	for(i = stRow; i < pMapSize[IDX_MAP_NROW] && animateLoop; i++)
 	{	
@@ -248,13 +244,13 @@ static int animateDown(void* pRefreshParams[], int* pBulletStCell)
 static int animateLeftRightCore(int animateLoop, int stRow, int i, void* pRefreshParams[], 
 								char** map, int pBullet[], int pPlayer[], int* gameStatus)
 {
-	if(map[stRow][i] == '*')
+	if (map[stRow][i] == MARKER_BORDER)
 	{	
 		/* hitting border */
 		pRefreshParams[IDX_RP_BULLET] = NULL;
 		pauseAndRefreshMap(pRefreshParams);			
 	}
-	else if(map[stRow][i] != ' ')
+	else if (map[stRow][i] != ' ')
 	{
 		/* shot enemy or player */
 		updateObj(pBullet, stRow, i, 'X');
@@ -267,7 +263,7 @@ static int animateLeftRightCore(int animateLoop, int stRow, int i, void* pRefres
 	}
 	else
 	{
-		/* lazer placement */
+		/* Bullet placement */
 		updateObj(pBullet, stRow, i, '-');
 		pRefreshParams[IDX_RP_BULLET] = pBullet;
 		pauseAndRefreshMap(pRefreshParams);			
@@ -292,7 +288,7 @@ static int animateLeft(void* pRefreshParams[], int* pBulletStCell)
 
 	char** map;
 	int *pMapSize, *pEnemy, *pPlayer, *pBullet;	
-	unPackRefreshParams(pRefreshParams, &map, &pMapSize, &pEnemy, &pPlayer, &pBullet);
+	unpackRefreshParams(pRefreshParams, &map, &pMapSize, &pEnemy, &pPlayer, &pBullet);
 	
 	for(i = stCol; i >= 0 && animateLoop; i--)
 	{
@@ -319,7 +315,7 @@ static int animateRight(void* pRefreshParams[], int* pBulletStCell)
 
 	char** map;
 	int *pMapSize, *pEnemy, *pPlayer, *pBullet;	
-	unPackRefreshParams(pRefreshParams, &map, &pMapSize, &pEnemy, &pPlayer, &pBullet);
+	unpackRefreshParams(pRefreshParams, &map, &pMapSize, &pEnemy, &pPlayer, &pBullet);
 		
 	for(i = stCol; i < pMapSize[IDX_MAP_NCOL] && animateLoop; i++)
 	{	
@@ -348,19 +344,19 @@ static int animate(void* pRefreshParams[], int* pBulletStCell)
 
 	switch (pBulletStCell[IDX_DIR])
 	{
-		case 'u':
+		case DIR_UP:
 			gameStatus = animateUp(pRefreshParams, pBulletStCell);
 		break;
 
-		case 'd':
+		case DIR_DOWN:
 			gameStatus = animateDown(pRefreshParams, pBulletStCell);
 		break;
 
-		case 'l':
+		case DIR_LEFT:
 			gameStatus = animateLeft(pRefreshParams, pBulletStCell);
 		break;
 
-		case 'r':
+		case DIR_RIGHT:
 			gameStatus = animateRight(pRefreshParams, pBulletStCell);
 		break;
 	}	
@@ -384,31 +380,31 @@ static void performTurnOrMove(int* pPlayer, char cUserInput)
 	switch(cUserInput)
 	{
 		case 'w':
-			if (pPlayer[IDX_DIR] != 'u')
-				pPlayer[IDX_DIR] = 'u';
+			if (pPlayer[IDX_DIR] != DIR_UP)
+				pPlayer[IDX_DIR] = DIR_UP;
 			else
 				pPlayer[IDX_ROW] = pPlayer[IDX_ROW] - 1;	
 		break;
 			
 		case 's':
-			if (pPlayer[IDX_DIR] != 'd')
-				pPlayer[IDX_DIR] = 'd';
+			if (pPlayer[IDX_DIR] != DIR_DOWN)
+				pPlayer[IDX_DIR] = DIR_DOWN;
 			else
 				pPlayer[IDX_ROW] = pPlayer[IDX_ROW]  + 1;
 		break;
 			
 		case 'a':
-			if (pPlayer[IDX_DIR] != 'l')
-				pPlayer[IDX_DIR] =  'l';
+			if (pPlayer[IDX_DIR] != DIR_LEFT)
+				pPlayer[IDX_DIR] =  DIR_LEFT;
 			else 
 				pPlayer[IDX_COL] = pPlayer[IDX_COL] - 1;
 		break;
 			
-		case 'd':
-			if (pPlayer[IDX_DIR] != 'r')
-				pPlayer[IDX_DIR] =  'r'; 
+		case DIR_DOWN:
+			if (pPlayer[IDX_DIR] != DIR_RIGHT)
+				pPlayer[IDX_DIR] =  DIR_RIGHT; 
 			else 
-			pPlayer[IDX_COL] = pPlayer[IDX_COL] + 1;			
+				pPlayer[IDX_COL] = pPlayer[IDX_COL] + 1;			
 		break;
 			
 		default:
@@ -433,37 +429,39 @@ int turnOrMove(void* pRefreshParams[], char cUserInput)
 	int aiPlayerNew[ARR_SIZE_OBJ];
 	int aiBulletStCell[ARR_SIZE_OBJ];
 
-	int hasMoved = FALSE;
+	int validPosition = FALSE;
 	int hasChangedDirection = FALSE;
 	int enemyCanShoot = FALSE;	
 
 	char** map;
 	int *pMapSize, *pEnemy, *pPlayer, *pBullet;	
-	unPackRefreshParams(pRefreshParams, &map, &pMapSize, &pEnemy, &pPlayer, &pBullet);	
+	unpackRefreshParams(pRefreshParams, &map, &pMapSize, &pEnemy, &pPlayer, &pBullet);	
 	
 	copyObj(aiPlayerNew, pPlayer);
 	
 	/* Update the direction of the player */
 	performTurnOrMove(aiPlayerNew, cUserInput);
 
-	/* New position (aiPlayerNew) is within the bounds & not overlap enemy */
-	hasMoved = validateObjBounds(pMapSize, aiPlayerNew, NULL) &&
-									!isObjOverlap(aiPlayerNew, pEnemy);
-
 	/* New position (aiPlayerNew) may be just a change of direction */
 	hasChangedDirection = (pPlayer[IDX_DIR] != aiPlayerNew[IDX_DIR]);
 
-	if (hasMoved || hasChangedDirection)
+	/* New position (aiPlayerNew) is within the bounds & not overlap enemy */
+	validPosition = validateObjBounds(pMapSize, aiPlayerNew, NULL) &&
+									!isObjOverlap(aiPlayerNew, pEnemy);
+
+	if (hasChangedDirection || validPosition)
 	{
 		/* Update player obj with new player obj */
 		copyObj(pPlayer, aiPlayerNew);
+		pRefreshParams[IDX_RP_PLAYER] = pPlayer;
+		refreshMap(pRefreshParams);
 
 		/* PERF: Check enemy can shoot, only if player has moved to a new cell */
-		if (!hasChangedDirection && hasMoved)					
+		if (!hasChangedDirection && validPosition)					
 			enemyCanShoot = isFacingPlayer(pEnemy, pPlayer, aiBulletStCell);
 	}	
 	
-	if(enemyCanShoot)
+	if (enemyCanShoot)
 		gameStatus = animate(pRefreshParams, aiBulletStCell);
 	
 	return gameStatus;
@@ -486,19 +484,19 @@ int shoot(void* pRefreshParams[])
 
 	switch(aiBulletStCell[IDX_DIR])
 	{
-		case 'u':
+		case DIR_UP:
 			aiBulletStCell[IDX_ROW] -= 1;
 		break;
 			
-		case 'd':
+		case DIR_DOWN:
 			aiBulletStCell[IDX_ROW] += 1;
 		break;
 			
-		case 'l':
+		case DIR_LEFT:
 			aiBulletStCell[IDX_COL] -= 1;
 		break;
 			
-		case 'r':
+		case DIR_RIGHT:
 			aiBulletStCell[IDX_COL] += 1;
 		break;
 	}	

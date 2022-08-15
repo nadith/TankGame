@@ -29,7 +29,7 @@ newSleep.o : newSleep.c newSleep.h
 util.o : util.c util.h macros.h
 	$(CC) -c util.c $(CFLAGS)
 
-validate.o : validate.c util.h macros.h validate.h
+validate.o : validate.c util.h macros.h
 	$(CC) -c validate.c $(CFLAGS)
 
 clean :

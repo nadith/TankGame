@@ -46,7 +46,7 @@ void packRefreshParams(void* pRefreshParams[], char** map, int* pMapSize,
  * @param ppPlayer export variable, player object (int [3]).
  * @param ppBulet export variable, bullet object (int [3]).
  */
-void unPackRefreshParams(void* pRefreshParams[], char*** map, int** ppMapSize, 
+void unpackRefreshParams(void* pRefreshParams[], char*** map, int** ppMapSize, 
 							int** ppEnemy, int** ppPlayer, int** ppBulet)
 {
 	*map = pRefreshParams[IDX_RP_MAP];
@@ -81,7 +81,7 @@ void updateObj(int* pObj, int val1, int val2, int val3)
  * @param pDestObj the detination object (enemy, player, bullet, etc).
  * @param pSrcObj the source object (enemy, player, bullet, etc).
  */
-void copyObj(int* pDestObj, int* pSrcObj)
+void copyObj(int pDestObj[], int pSrcObj[])
 {
 	if (pSrcObj)
 		memcpy(pDestObj, pSrcObj, sizeof(int)*ARR_SIZE_OBJ);
@@ -112,6 +112,8 @@ void resetObj(int pObj[])
 }
 
 /**************************************************************************************************/
+/* Debug Prints Related Methods														    	  	  */
+/**************************************************************************************************/
 /**
  * @brief Get the string representation of the object (enemy, player, bullet, etc). 
  * 
@@ -126,8 +128,6 @@ void toString(int pObj[], char zObjStr[])
 		sprintf(zObjStr, "{null}");
 }
 
-/**************************************************************************************************/
-/* Debug Prints Related Methods														    	  	  */
 /**************************************************************************************************/
 /**
  * @brief Debug print of the object (enemy, player, bullet, etc). 
@@ -172,7 +172,7 @@ void debugRefreshMapParams(void* pRefreshParams[], char* zPrefix)
 
 	char** map;
 	int *pMapSize, *pEnemy, *pPlayer, *pBullet;	
-	unPackRefreshParams(pRefreshParams, &map, &pMapSize, &pEnemy, &pPlayer, &pBullet);
+	unpackRefreshParams(pRefreshParams, &map, &pMapSize, &pEnemy, &pPlayer, &pBullet);
 	toString(pBullet, zBullet);
 
 	/*
@@ -180,7 +180,7 @@ void debugRefreshMapParams(void* pRefreshParams[], char* zPrefix)
 	M -> map
 	E -> enemy
 	P -> player
-	L -> lazer	
+	B -> bullet	
 	*/		
 	printf("%s: M:{%d, %d, %p} E:{%d, %d, %c} P:{%d, %d, %c} B:%s\n", 
 			zPrefix, 
@@ -204,8 +204,6 @@ void red(char ch)
 {
     printf("\033[1;31m");
     printf("%c%s", ch, "\033[0m");
-
-	return;
 }
 
 /**************************************************************************************************/
@@ -218,10 +216,10 @@ void green(char ch)
 {
     printf("\033[1;32m");
     printf("%c%s", ch, "\033[0m");
-
-	return;
 }
 
+/**************************************************************************************************/
+/* Debug Prints Methods														    	  		  	  */
 /**************************************************************************************************/
 /**
  * @brief Put red color string/error on the terminal.
@@ -232,6 +230,4 @@ void printError(char *zStr)
 {
     printf("\033[1;31m");
     printf("[ERROR] %s%s", zStr, "\033[0m");
-
-	return;
 }
