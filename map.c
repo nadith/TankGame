@@ -178,7 +178,7 @@ static void printMap(char** map, int pMapSize[])
  * @brief Refresh the map. This used to print the map to the screen every time a
  * user activity is performed.
  * 
- * @param pRefreshParams parameter object (void* []) to pass across other functions.
+ * @param pRefreshParams parameter object (void* []) to pass across functions.
  */
 void refreshMap(void* pRefreshParams[])
 {
@@ -206,7 +206,7 @@ void refreshMap(void* pRefreshParams[])
  * @brief Add pause time before refresh the map / screen. Refer refreshMap() for
  * more details.
  * 
- * @param pRefreshParams parameter object (void* []) to pass across other functions.
+ * @param pRefreshParams parameter object (void* []) to pass across functions.
  */
 void pauseAndRefreshMap(void* pRefreshParams[])
 {

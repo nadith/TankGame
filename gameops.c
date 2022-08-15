@@ -67,7 +67,7 @@ void readUserInput(char* pcUserInput)
  * @brief Game loop. Once the wining or loosing condition are met, 
  * the loop will exit.
  * 
- * @param pRefreshParams parameter object (void* []) to pass across other functions.
+ * @param pRefreshParams parameter object (void* []) to pass across functions.
  * @return int Game status other then GS_NONE_HIT. 
  * Refer to macros.h for other game status.
  */
@@ -89,6 +89,9 @@ int mainLoop(void* pRefreshParams[])
 			case KEY_RIGHT:		
 				gameStatus = turnOrMove(pRefreshParams, cUserInput);
 				debugObj(pRefreshParams[IDX_RP_PLAYER], "Player");
+
+				if(gameStatus == GS_NONE_HIT)
+					refreshMap(pRefreshParams);
 			break;
 				
 			case KEY_SHOOT:
@@ -135,12 +138,12 @@ void processGameStatus(int gameStatus)
  * @param animateLoop animate loop current status (TRUE / FALSE).
  * @param stCol start column of the map.
  * @param i current column index of the map.
- * @param pRefreshParams parameter object (void* []) to pass across other functions.
+ * @param pRefreshParams parameter object (void* []) to pass across functions.
  * @param map the canvas.
  * @param pBullet bullet object (int [3]).
  * @param pPlayer player object (int [3]).
  * @param gameStatus export variable to send out the game status.
- * @return int 
+ * @return int whether to continue animation loop or not.
  */
 static int animateUpDownCore(int animateLoop, int stCol, int i, void* pRefreshParams[], 
 								char** map, int pBullet[], int pPlayer[], int* gameStatus)
@@ -177,7 +180,7 @@ static int animateUpDownCore(int animateLoop, int stCol, int i, void* pRefreshPa
 /**
  * @brief Animate the bullet from bottom to top.
  * 
- * @param pRefreshParams parameter object (void* []) to pass across other functions.
+ * @param pRefreshParams parameter object (void* []) to pass across functions.
  * @param pBulletStCell starting cell of the bullet animation.
  * @return int Game status. Refer to macros.h for game status.
  */
@@ -204,7 +207,7 @@ static int animateUp(void* pRefreshParams[], int* pBulletStCell)
 /**
  * @brief Animate the bullet from top to bottom.
  * 
- * @param pRefreshParams parameter object (void* []) to pass across other functions.
+ * @param pRefreshParams parameter object (void* []) to pass across functions.
  * @param pBulletStCell starting cell of the bullet animation.
  * @return int Game status. Refer to macros.h for game status.
  */
@@ -234,7 +237,7 @@ static int animateDown(void* pRefreshParams[], int* pBulletStCell)
  * @param animateLoop animate loop current status (TRUE / FALSE).
  * @param stRow start row of the map.
  * @param i current column index of the map.
- * @param pRefreshParams parameter object (void* []) to pass across other functions.
+ * @param pRefreshParams parameter object (void* []) to pass across functions.
  * @param map the canvas.
  * @param pBullet bullet object (int [3]).
  * @param pPlayer player object (int [3]).
@@ -276,7 +279,7 @@ static int animateLeftRightCore(int animateLoop, int stRow, int i, void* pRefres
 /**
  * @brief Animate the bullet from right to left.
  * 
- * @param pRefreshParams parameter object (void* []) to pass across other functions.
+ * @param pRefreshParams parameter object (void* []) to pass across functions.
  * @param pBulletStCell starting cell of the bullet animation.
  * @return int Game status. Refer to macros.h for game status.
  */
@@ -303,7 +306,7 @@ static int animateLeft(void* pRefreshParams[], int* pBulletStCell)
 /**
  * @brief Animate the bullet from left to right.
  * 
- * @param pRefreshParams parameter object (void* []) to pass across other functions.
+ * @param pRefreshParams parameter object (void* []) to pass across functions.
  * @param pBulletStCell starting cell of the bullet animation.
  * @return int game status. Refer to macros.h for game status.
  */
@@ -330,7 +333,7 @@ static int animateRight(void* pRefreshParams[], int* pBulletStCell)
 /**
  * @brief Animate the bullet depending on the direction.
  * 
- * @param pRefreshParams parameter object (void* []) to pass across other functions.
+ * @param pRefreshParams parameter object (void* []) to pass across functions.
  * @param pBulletStCell starting cell of the bullet animation.
  * @return int game status. Refer to macros.h for game status.
  */
@@ -419,7 +422,7 @@ static void performTurnOrMove(int* pPlayer, char cUserInput)
  * key is pressed. Then the player will move on the next key press. If the
  * player is moved to new cell, check whether enemy can shoot. If yes, shoot.
  * 
- * @param pRefreshParams parameter object (void* []) to pass across other functions. 
+ * @param pRefreshParams parameter object (void* []) to pass across functions. 
  * @param cUserInput user choice (char).
  * @return int game status. Refer to macros.h for game status.
  */
@@ -453,8 +456,6 @@ int turnOrMove(void* pRefreshParams[], char cUserInput)
 	{
 		/* Update player obj with new player obj */
 		copyObj(pPlayer, aiPlayerNew);
-		pRefreshParams[IDX_RP_PLAYER] = pPlayer;
-		refreshMap(pRefreshParams);
 
 		/* PERF: Check enemy can shoot, only if player has moved to a new cell */
 		if (!hasChangedDirection && validPosition)					
@@ -462,7 +463,10 @@ int turnOrMove(void* pRefreshParams[], char cUserInput)
 	}	
 	
 	if (enemyCanShoot)
+	{
+		refreshMap(pRefreshParams);
 		gameStatus = animate(pRefreshParams, aiBulletStCell);
+	}
 	
 	return gameStatus;
 }
@@ -472,7 +476,7 @@ int turnOrMove(void* pRefreshParams[], char cUserInput)
  * @brief Shoot a bullet from the player. For shooting a bullet from the enemy
  * refer to `turnOrMove()` method, `enemyCanShoot` boolean.
  * 
- * @param pRefreshParams parameter object (void* []) to pass across other functions. 
+ * @param pRefreshParams parameter object (void* []) to pass across functions. 
  * @return int game status. Refer to macros.h for game status.
  */
 int shoot(void* pRefreshParams[])

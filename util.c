@@ -18,7 +18,7 @@
 /**
  * @brief Pack the individual parameters into RefreshParams array.
  * 
- * @param pRefreshParams parameter object (void* []) to pass across other functions.
+ * @param pRefreshParams parameter object (void* []) to pass across functions.
  * @param map canvas (char**)
  * @param pMapSize size of the map (int [2]).
  * @param pEnemy enemy object (int [3]).
@@ -39,7 +39,7 @@ void packRefreshParams(void* pRefreshParams[], char** map, int* pMapSize,
 /**
  * @brief Unpack the individual parameters from RefreshParams array.
  * 
- * @param pRefreshParams parameter object (void* []) to pass across other functions.
+ * @param pRefreshParams parameter object (void* []) to pass across functions.
  * @param map canvas (char**)
  * @param ppMapSize export variable, size of the map (int [2]).
  * @param ppEnemy export variable, enemy object (int [3]).
@@ -161,7 +161,7 @@ void debugMap(char** map, int* pMapSize, const char* zPrefix)
 /**
  * @brief Debug print of the refresh parameters.
  * 
- * @param pRefreshParams parameter object (void* []) to pass across other functions.
+ * @param pRefreshParams parameter object (void* []) to pass across functions.
  * @param zPrefix curtom prefix string.
  */
 void debugRefreshMapParams(void* pRefreshParams[], char* zPrefix)
