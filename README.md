@@ -18,10 +18,12 @@ Task 01 Highlights:
 - No multiple returns, global variables
 - No break, continue statements inside loops (switch statements are allowed)
 - No code duplication
+- Debug prints are all surrounded by #ifdef DEBUG (no debug prints in release)
 - Header file usage (logical grouping of functions into headers)
 - Static functions (all methods not listed in headers must be static)
 - Meaningful variable names and function names (the name itself indicates what it does without comments)
 - Input validation according to the assignment specification
+- Minimum number of mallocs (very low probability of memory leaks)
 - Valgrind (0 memory leaks, 0 errors) during gameplay & initial stage of validating input
 - Zero crashes (should meet all assignment spec requirements)
 - Makefile dependencies are correctly listed (non-dependant headers not included)
