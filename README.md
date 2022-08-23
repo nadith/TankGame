@@ -24,6 +24,7 @@ Task 01 Highlights:
 - Meaningful variable names and function names (the name itself indicates what it does without comments)
 - Input validation according to the assignment specification
 - Minimum number of mallocs (very low probability of memory leaks)
+- 0 warnings, 0 errors during the compilation of the code
 - Valgrind (0 memory leaks, 0 errors) during gameplay & initial stage of validating input
 - Zero crashes (should meet all assignment spec requirements)
 - Makefile dependencies are correctly listed (non-dependant headers not included)
